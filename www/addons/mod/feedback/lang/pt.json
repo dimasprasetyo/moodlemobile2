@@ -3,7 +3,7 @@
     "anonymous": "Anónimo",
     "anonymous_entries": "Respostas anónimas ({{$a}})",
     "average": "Média",
-    "captchaofflinewarning": "Inquérito com captcha não pode ser concluído se não estiver configurado, nem em modo offline ou com o servidor em baixo.",
+    "captchaofflinewarning": "Inquérito com CAPTCHA não pode ser concluído em modo offline, ou se não estiver configurado, ou o servidor está em baixo.",
     "complete_the_form": "Responder às questões...",
     "completed_feedbacks": "Respostas submetidas",
     "continue_the_form": "Continuar a responder às perguntas...",
@@ -20,7 +20,7 @@
     "not_selected": "Não respondido",
     "not_started": "Por iniciar",
     "numberoutofrange": "Valor fora do intervalo",
-    "overview": "Visão geral",
+    "overview": "Visão global",
     "page_after_submit": "Mensagem de conclusão",
     "preview": "Pré-visualização",
     "previous_page": "Página anterior",
@@ -31,5 +31,5 @@
     "show_entries": "Respostas",
     "show_nonrespondents": "Utilizadores que não responderam",
     "started": "Iniciado",
-    "this_feedback_is_already_submitted": "Já completou esta atividade"
+    "this_feedback_is_already_submitted": "Já concluiu esta atividade"
 }

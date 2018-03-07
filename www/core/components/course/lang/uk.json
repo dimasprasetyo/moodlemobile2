@@ -1,6 +1,5 @@
 {
     "activitydisabled": "Ваша організація відключила цю активність в мобільному додатку.",
-    "activitynotyetviewableinapp": "Ми працюємо на підтримку діяльності {{$a}}.",
     "activitynotyetviewableremoteaddon": "Ваша організація встановила плагін, який ще не підтримується.",
     "activitynotyetviewablesiteupgradeneeded": "Установка версія Moodle вашої організації повинна бути оновлена.",
     "allsections": "Всі секції",
@@ -17,6 +16,5 @@
     "hiddenfromstudents": "Сховане від студентів",
     "nocontentavailable": "Немає контенту, доступного в даний момент.",
     "overriddennotice": "Ваші фінальні бали з даної активності були відкореговані вручну.",
-    "showall": "Показати все",
     "useactivityonbrowser": "Ви все ще можете використовувати його за допомогою браузера пристрою."
 }

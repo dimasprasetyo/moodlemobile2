@@ -15,6 +15,18 @@ $doughnut-text-colour: $gray-darker;
     color: $doughnut-text-colour;
     position: absolute;
   }
+
+  &.item-progress .mm-course-download-spinner {
+    top: 46px;
+  }
+
+  &:not(.item-progress) {
+    padding-right: 80px;
+
+    .mm-course-download-spinner {
+      right: 40px;
+    }
+  }
 }
 
 .item-progress {
@@ -119,4 +131,9 @@ $doughnut-text-colour: $gray-darker;
 .mm-site_mm_coursescategories .item-icon-left,
 mm-course-list-item .item-icon-left {
   color: $black;
+}
+
+.mm-course-enrollment-img {
+  max-width: 20px;
+  max-height: 34px;
 }

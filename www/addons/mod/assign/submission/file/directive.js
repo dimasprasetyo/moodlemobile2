@@ -23,6 +23,7 @@ angular.module('mm.addons.mod_assign')
  */
 .directive('mmaModAssignSubmissionFile', function($mmaModAssign, $mmFileSession, mmaModAssignComponent, $mmaModAssignHelper,
             $mmaModAssignOffline, mmaModAssignSubmissionFileName, $mmFileUploaderHelper, $q) {
+
     return {
         restrict: 'A',
         priority: 100,

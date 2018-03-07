@@ -209,7 +209,7 @@ angular.module('mm.core')
          * @return {Boolean}   TRUE if the url is absolute. FALSE if it is relative.
          */
         self.isAbsoluteURL = function(url) {
-            return /^[^:]{2,10}:\/\//i.test(url) || /^(tel:|mailto:|geo:)/.test(url);
+            return /^[^:]{2,}:\/\//i.test(url) || /^(tel:|mailto:|geo:)/.test(url);
         };
 
         /**
@@ -1416,9 +1416,10 @@ angular.module('mm.core')
          *                                      Default: 'mm.course.confirmdownloadunknownsize'.
          * @param {Number} [wifiThreshold]      Threshold to show confirm in WiFi connection. Default: mmCoreWifiDownloadThreshold.
          * @param {Number} [limitedThreshold]   Threshold to show confirm in limited connection. Default: mmCoreDownloadThreshold.
+         * @param  {Boolean} [alwaysConfirm]    True to show a confirm even if the size isn't high, false otherwise.
          * @return {Promise}                   Promise resolved when the user confirms or if no confirm needed.
          */
-        self.confirmDownloadSize = function(sizeCalc, message, unknownsizemessage, wifiThreshold, limitedThreshold) {
+        self.confirmDownloadSize = function(sizeCalc, message, unknownsizemessage, wifiThreshold, limitedThreshold, alwaysConfirm) {
             wifiThreshold = typeof wifiThreshold == 'undefined' ? mmCoreWifiDownloadThreshold : wifiThreshold;
             limitedThreshold = typeof limitedThreshold == 'undefined' ? mmCoreDownloadThreshold : limitedThreshold;
 
@@ -1439,6 +1440,8 @@ angular.module('mm.core')
                 message = message || 'mm.course.confirmdownload';
                 var readableSize = $mmText.bytesToSize(sizeCalc.size, 2);
                 return self.showConfirm($translate(message, {size: readableSize}));
+            } else if (alwaysConfirm) {
+                return self.showConfirm($translate('mm.core.areyousure'));
             }
             return $q.when();
         };
@@ -1994,6 +1997,40 @@ angular.module('mm.core')
                     fileurl: url
                 };
             });
+        };
+
+        /**
+         * Given a list (eg a,b,c,d,e) this function returns an array of 1->a, 2->b, 3->c etc.
+         *
+         * Taken from make_menu_from_list on moodlelib.php (not the same but similar).
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#makeMenuFromList
+         * @param  {String} list            The string to explode into array bits
+         * @param  {String} [defaultLabel]  Element that will become default option, if not defined, it won't be added.
+         * @param  {String} [separator]     The separator used within the list string. Default ','.
+         * @param  {Mixed}  [defaultValue]  Element that will become default option value. Default 0.
+         * @return {Arrray}                 The now assembled array
+         */
+        self.makeMenuFromList = function(list, defaultLabel, separator, defaultValue) {
+            separator = separator || ',';
+            list = list.split(separator);
+
+            list = list.map(function (label, index) {
+                return {
+                    label: label.trim(),
+                    value: index + 1
+                };
+            });
+
+            if (defaultLabel) {
+                list.unshift({
+                    label: defaultLabel,
+                    value: defaultValue || 0
+                });
+            }
+            return list;
         };
 
         /**
@@ -2571,6 +2608,129 @@ angular.module('mm.core')
                 }
             }
             return measure;
+        };
+
+        /**
+         * Gets the index of the first string that matches a regular expression.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#indexOfRegexp
+         * @param  {String[]} array Array to search.
+         * @param  {RegExp} regex   RegExp to apply to each string.
+         * @return {Number}         Index of the first string that matches the RegExp. -1 if not found.
+         */
+        self.indexOfRegexp = function(array, regex) {
+            if (!array || !array.length) {
+                return -1;
+            }
+
+            for (var i = 0; i < array.length; i++) {
+                var entry = array[i],
+                    matches = entry.match(regex);
+
+                if (matches && matches.length) {
+                    return i;
+                }
+            }
+
+            return -1;
+        };
+
+        /**
+         * Given an array of strings, return only the ones that match a regular expression.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#filterByRegexp
+         * @param  {String[]} array Array to filter.
+         * @param  {RegExp} regex   RegExp to apply to each string.
+         * @return {String[]}       Filtered array.
+         */
+        self.filterByRegexp = function(array, regex) {
+            if (!array || !array.length) {
+                return [];
+            }
+
+            return array.filter(function(entry) {
+                var matches = entry.match(regex);
+                return matches && matches.length;
+            });
+        };
+
+        /**
+         * Filters the undefined items that can be in an array.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#filterUndefinedItemsInArray
+         * @param  {Array} items  With all the items.
+         * @return {Array}        Only with the defined items,
+         */
+        self.filterUndefinedItemsInArray = function(items) {
+            return items.filter(function(item) {
+                return typeof item != "undefined";
+            });
+        };
+
+        /**
+         * Retrieve the information entered in a form.
+         * We don't use ng-model because it doesn't detect changes done by JavaScript.
+         *
+         * @module mm.core
+         * @ngdoc method
+         * @name $mmUtil#getInfoValuesFromForm
+         * @param  {Object} form Form (DOM element).
+         * @return {Object}      Object with the info values.
+         */
+        self.getInfoValuesFromForm = function(form) {
+            if (!form || !form.elements) {
+                return {};
+            }
+
+            var formData = {},
+                simpleCheckboxes = {};
+
+            angular.forEach(form.elements, function(element) {
+                var name = element.name || '';
+                // Ignore submit inputs.
+                if (element.type == 'submit' || element.tagName == 'BUTTON') {
+                    return;
+                }
+                if (!name) {
+                    $log.debug('Form element without name.', element);
+                    return;
+                }
+
+                // Get the value.
+                switch (element.type) {
+                    case 'checkbox':
+                        if (typeof simpleCheckboxes[name] == "undefined") {
+                           simpleCheckboxes[name] = {};
+                        }
+                        simpleCheckboxes[name][element.value] = !!element.checked;
+                        break;
+                    case 'radio':
+                        if (element.checked) {
+                            formData[name] = element.value;
+                        }
+                        break;
+                    default:
+                        formData[name] = element.value;
+                }
+            });
+
+            angular.forEach(simpleCheckboxes, function(checkbox, name) {
+                var keys = Object.keys(checkbox);
+                // Single standard checkbox without real value.
+                if (keys.length == 1 && keys[0] == "on") {
+                    formData[name] = checkbox.on;
+                } else {
+                    formData[name] = checkbox;
+                }
+            });
+
+            return formData;
         };
 
         return self;
